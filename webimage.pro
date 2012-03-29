@@ -14,7 +14,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    snapshoot.cpp
+    snapshot.cpp
 
 HEADERS += \
-    snapshoot.h
+    snapshot.h

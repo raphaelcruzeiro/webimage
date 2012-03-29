@@ -1,11 +1,11 @@
 #include <QApplication>
-#include "snapshoot.h"
+#include "snapshot.h"
 
-Snapshoot::Snapshoot(QObject *parent) : QObject(parent), page(new QWebPage)
+Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new QWebPage)
 {
 }
 
-void Snapshoot::shoot(QUrl url, QSize &size, QString *outputFilename)
+void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename)
 {
     this->outputFilename = outputFilename;
     connect(page, SIGNAL(loadFinished(bool)), SLOT(doneLoading(bool)));
@@ -14,7 +14,7 @@ void Snapshoot::shoot(QUrl url, QSize &size, QString *outputFilename)
     page->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 }
 
-void Snapshoot::doneLoading(bool)
+void Snapshot::doneLoading(bool)
 {
     QImage image(page->viewportSize(), QImage::Format_ARGB32);
     QPainter painter(&image);

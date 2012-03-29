@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "snapshoot.h"
+#include "snapshot.h"
 
 #include <QDebug>
 
@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
             size = QSize(1024, 768);
         }
 
-        Snapshoot shoot;
-        if (argc > 2) shoot.shoot(QUrl(QString(argv[1])), size, new QString(argv[3])); else shoot.shoot(QUrl(QString(argv[1])), size);
+        Snapshot shot;
+        if (argc > 2) shot.shot(QUrl(QString(argv[1])), size, new QString(argv[3])); else shot.shot(QUrl(QString(argv[1])), size);
 
         return a.exec();
     }
