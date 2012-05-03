@@ -6,11 +6,13 @@
 #include <QPainter>
 #include<QTimer>
 
+class CustomWebPage;
+
 class Snapshot : QObject
 {
     Q_OBJECT
 
-    QWebPage *page;
+    CustomWebPage *page;
     QString *outputFilename;
     QTimer *timer;
     int statusCode;

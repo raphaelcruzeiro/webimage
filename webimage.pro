@@ -14,7 +14,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    snapshot.cpp
+    snapshot.cpp \
+    customwebpage.cpp
 
 HEADERS += \
-    snapshot.h
+    snapshot.h \
+    customwebpage.h

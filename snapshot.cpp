@@ -1,7 +1,8 @@
 #include <QApplication>
 #include "snapshot.h"
+#include "customwebpage.h"
 
-Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new QWebPage), statusCode(0), tries(0)
+Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), statusCode(0), tries(0)
 {
 }
 
