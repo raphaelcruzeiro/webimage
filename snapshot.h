@@ -4,6 +4,7 @@
 #include <QtWebKit>
 #include <QImage>
 #include <QPainter>
+#include<QTimer>
 
 class Snapshot : QObject
 {
@@ -11,6 +12,11 @@ class Snapshot : QObject
 
     QWebPage *page;
     QString *outputFilename;
+    QTimer *timer;
+    int statusCode;
+    QUrl redirectUrl;
+
+    int tries;
 
 public:
     Snapshot(QObject *parent = 0);
@@ -18,6 +24,9 @@ public:
 
 private slots:
     void doneLoading(bool);
+    void doneWaiting();
+    void gotReply(QNetworkReply *reply);
+    void sslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
 };
 
 #endif // SNAPSHOT_H
