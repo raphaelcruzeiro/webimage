@@ -94,7 +94,7 @@ void Snapshot::gotReply(QNetworkReply *reply)
         qDebug() << "Got reply " + reply->url().toString() + " - " + reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString() + " - " + reply->header(QNetworkRequest::ContentTypeHeader).toString();
     }
 
-    if(reply->header(QNetworkRequest::ContentTypeHeader).toString().contains(QString("text/html"))) {
+    if(reply->header(QNetworkRequest::ContentTypeHeader).toString().contains(QString("text/html")) && statusCode != 200) {
         statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         redirectUrl = QUrl(reply->header(QNetworkRequest::LocationHeader).toUrl());
     }
