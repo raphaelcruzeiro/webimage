@@ -6,8 +6,20 @@ Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), 
 {
 }
 
-void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename)
+void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleTo, bool ignoreVerticalLimit, bool useSystemUI)
 {
+    this->scaleTo = scaleTo;
+    this->ignoreVerticalLimit = ignoreVerticalLimit;
+    this->size = size;
+    this->useSystemUI = useSystemUI;
+
+    if(useSystemUI) {
+        qDebug() << "Loading UI...";
+        view = new QWebView;
+        view->setPage(page);
+        view->showFullScreen();
+    }
+
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), SLOT(doneWaiting()));
 
@@ -15,6 +27,7 @@ void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename)
     connect(page->networkAccessManager(), SIGNAL(finished(QNetworkReply*)), SLOT(gotReply(QNetworkReply*)));
     connect(page, SIGNAL(loadFinished(bool)), SLOT(doneLoading(bool)));
     connect(page->networkAccessManager(), SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), SLOT(sslErrors(QNetworkReply*,QList<QSslError>)));
+
     page->mainFrame()->load(url);
     page->setViewportSize(size);
     page->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
@@ -33,16 +46,25 @@ void Snapshot::doneWaiting()
         statusCode != 302 &&
         statusCode != 303
        ) {
-        QImage image(page->viewportSize(), QImage::Format_ARGB32);
-        QPainter painter(&image);
 
-        page->mainFrame()->render(&painter);
+        if(!useSystemUI) {
+            QImage image(page->viewportSize(), QImage::Format_ARGB32);
+            QPainter painter(&image);
 
-        painter.end();
+            page->mainFrame()->render(&painter);
+            painter.end();
 
-        image.save(*outputFilename);
+            if(this->scaleTo != QSize(0, 0)) {
+                qDebug() << "Scaling to " << scaleTo.width() << "x" << scaleTo.height();
+                image = image.scaled(scaleTo);
+            }
 
-        delete outputFilename;
+            image.save(*outputFilename);
+        } else {
+            QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), size.height());
+            pix.save(*outputFilename);
+        }
+
         QApplication::quit();
     }
     else if(statusCode != 0) {

@@ -17,12 +17,16 @@ class Snapshot : QObject
     QTimer *timer;
     int statusCode;
     QUrl redirectUrl;
+    QSize scaleTo, size;
+    bool ignoreVerticalLimit, useSystemUI;
+    QWebView *view;
 
     int tries;
 
 public:
     Snapshot(QObject *parent = 0);
-    void shot(QUrl url, QSize &size, QString *outputFilename = new QString("output.png"));
+    void shot(QUrl url, QSize &size, QString *outputFilename = new QString("output.png"),
+              QSize scaleTo = QSize(0, 0), bool ignoreVerticalLimit = false, bool useSystemUI = false);
 
 private slots:
     void doneLoading(bool);
