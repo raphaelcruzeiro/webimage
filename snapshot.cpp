@@ -10,14 +10,14 @@ void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleT
 {
     this->scaleTo = scaleTo;
     this->ignoreVerticalLimit = ignoreVerticalLimit;
-    this->size = size;
+    this->size = QSize(1024, 3000);
     this->useSystemUI = useSystemUI;
 
     if(useSystemUI) {
         qDebug() << "Loading UI...";
         view = new QWebView;
         view->setPage(page);
-        view->showFullScreen();
+        view->setMinimumSize(1024, 3000);
     }
 
     timer = new QTimer(this);
@@ -61,7 +61,7 @@ void Snapshot::doneWaiting()
 
             image.save(*outputFilename);
         } else {
-            QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), size.height());
+            QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
             pix.save(*outputFilename);
         }
 
