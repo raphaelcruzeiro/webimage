@@ -1,5 +1,21 @@
 #include <QApplication>
 #include "snapshot.h"
+//    Webimage - Website to image render tool
+//    Copyright (C) 2012  Raphael Cruzeiro
+
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "customwebpage.h"
 
 Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), statusCode(0), tries(0)
@@ -10,14 +26,14 @@ void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleT
 {
     this->scaleTo = scaleTo;
     this->ignoreVerticalLimit = ignoreVerticalLimit;
-    this->size = QSize(1024, 3000);
+    this->size = QSize(1024, 6000);
     this->useSystemUI = useSystemUI;
 
     if(useSystemUI) {
         qDebug() << "Loading UI...";
         view = new QWebView;
         view->setPage(page);
-        view->setMinimumSize(1024, 3000);
+        view->setMinimumSize(1024, 5000);
     }
 
     timer = new QTimer(this);
@@ -59,8 +75,10 @@ void Snapshot::doneWaiting()
                 image = image.scaled(scaleTo);
             }
 
-            image.save(*outputFilename);
+            image.save(*outputFilename, "JPEG");
         } else {
+            view->setMaximumHeight(page->mainFrame()->contentsSize().height());
+            view->repaint();
             QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
             pix.save(*outputFilename);
         }
