@@ -1,5 +1,3 @@
-#include <QApplication>
-#include "snapshot.h"
 //    Webimage - Website to image render tool
 //    Copyright (C) 2012  Raphael Cruzeiro
 
@@ -16,6 +14,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QApplication>
+#include "snapshot.h"
 #include "customwebpage.h"
 
 Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), statusCode(0), tries(0)
