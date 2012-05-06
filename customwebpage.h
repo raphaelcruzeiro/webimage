@@ -25,6 +25,7 @@ class CustomWebPage : public QWebPage
 {
 public:
     CustomWebPage(QObject *parent = 0);
+    QString userAgentForUrl(const QUrl &url) const;
 
 protected:
     void javaScriptAlert(QWebFrame *originatingFrame, const QString &msg);
