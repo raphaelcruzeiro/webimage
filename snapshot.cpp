@@ -26,14 +26,16 @@ void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleT
 {
     this->scaleTo = scaleTo;
     this->ignoreVerticalLimit = ignoreVerticalLimit;
-    this->size = QSize(1024, 6000);
+    this->size = size;
     this->useSystemUI = useSystemUI;
 
     if(useSystemUI) {
         qDebug() << "Loading UI...";
         view = new QWebView;
         view->setPage(page);
-        view->setMinimumSize(1024, 5000);
+        QSize newSize = this->size;
+        newSize.setHeight(7000);
+        view->setMinimumSize(newSize);
     }
 
     timer = new QTimer(this);
