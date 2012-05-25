@@ -37,12 +37,12 @@ class Snapshot : QObject
     bool ignoreVerticalLimit, useSystemUI;
     QWebView *view;
 
-    int tries;
+    int tries, quality;
 
 public:
     Snapshot(QObject *parent = 0);
     void shot(QUrl url, QSize &size, QString *outputFilename = new QString("output.png"),
-              QSize scaleTo = QSize(0, 0), bool ignoreVerticalLimit = false, bool useSystemUI = false);
+              QSize scaleTo = QSize(0, 0), bool ignoreVerticalLimit = false, bool useSystemUI = false, int quality = -1);
 
 private slots:
     void doneLoading(bool);

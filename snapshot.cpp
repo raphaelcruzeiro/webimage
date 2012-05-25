@@ -22,12 +22,13 @@ Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), 
 {
 }
 
-void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleTo, bool ignoreVerticalLimit, bool useSystemUI)
+void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleTo, bool ignoreVerticalLimit, bool useSystemUI, int quality)
 {
     this->scaleTo = scaleTo;
     this->ignoreVerticalLimit = ignoreVerticalLimit;
     this->size = size;
     this->useSystemUI = useSystemUI;
+    this->quality = quality;
 
     if(useSystemUI) {
         qDebug() << "Loading UI...";
@@ -82,7 +83,13 @@ void Snapshot::doneWaiting()
             view->setMaximumHeight(page->mainFrame()->contentsSize().height());
             view->repaint();
             QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
-            pix.save(*outputFilename);
+            pix.save(*outputFilename, "JPEG", quality);
+
+
+            QString thumbFilename = QString("%1_thumb.jpg").arg(outputFilename->split('.')[0]);
+            QSize thumbSize((size.width() / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
+            pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
+            pix.save(thumbFilename, "JPEG", quality);
         }
 
         QApplication::quit();
