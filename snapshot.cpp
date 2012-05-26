@@ -22,15 +22,17 @@ Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), 
 {
 }
 
-void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, int quality)
+void Snapshot::shot(QUrl url, int minWidth, QString *outputFilename, int quality)
 {
-    this->size = size;
+    this->minWidth = minWidth;
     this->quality = quality;
+
+    QSize size(minWidth, 768);
 
     qDebug() << "Loading fake UI...";
     view = new QWebView;
     view->setPage(page);
-    QSize newSize = this->size;
+    QSize newSize = size;
     newSize.setHeight(7000);
     view->setMinimumSize(newSize);
 
@@ -61,19 +63,19 @@ void Snapshot::doneWaiting()
         statusCode != 303
        ) {
 
-        if(size.width() < page->mainFrame()->contentsSize().width()) {
-            size.setWidth(page->mainFrame()->contentsSize().width());
+        if(minWidth < page->mainFrame()->contentsSize().width()) {
+            minWidth = page->mainFrame()->contentsSize().width();
             view->setMinimumWidth(page->mainFrame()->contentsSize().width());
         }
 
         view->setMinimumHeight(page->mainFrame()->contentsSize().height());
         view->repaint();
-        QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
+        QPixmap pix = QPixmap::grabWidget(view, 0, 0, minWidth, page->mainFrame()->contentsSize().height());
         pix.save(*outputFilename, "JPEG", quality);
 
 
         QString thumbFilename = QString("%1_thumb.jpg").arg(outputFilename->split('.')[0]);
-        QSize thumbSize((size.width() / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
+        QSize thumbSize((minWidth / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
         pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
         pix.save(thumbFilename, "JPEG", quality);
 

@@ -18,6 +18,7 @@
 #include "snapshot.h"
 
 #include <QDebug>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -26,7 +27,12 @@ int main(int argc, char *argv[])
 
         QUrl url;
         QString output;
-        QSize size(1024, 768);
+        int minWidth = 1024;
+
+        if(argc < 2) {
+            std::cout << "Usage: webimage <url> <output> <optional: minimum width>" << std::endl;
+            return -1;
+        }
 
         for(int i = 0; i < argc; i++) {
             switch (i) {
@@ -39,16 +45,13 @@ int main(int argc, char *argv[])
                 break;
 
             case 3:
-                size = QSize(
-                            QString(argv[3]).split(QChar('x'))[0].toInt(),
-                            QString(argv[3]).split(QChar('x'))[1].toInt()
-                );
+                minWidth = QString(argv[3]).toInt();
                 break;
             }
         }
 
         Snapshot shot;
-        shot.shot(url, size, &output);
+        shot.shot(url, minWidth, &output);
 
         return a.exec();
     }

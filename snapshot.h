@@ -34,13 +34,13 @@ class Snapshot : QObject
     int statusCode;
     QUrl redirectUrl;
     QWebView *view;
-    QSize size;
+    int minWidth;
 
     int tries, quality;
 
 public:
     Snapshot(QObject *parent = 0);
-    void shot(QUrl url, QSize &size, QString *outputFilename = new QString("output.png"), int quality = -1);
+    void shot(QUrl url, int minWidth = 1024, QString *outputFilename = new QString("output.png"), int quality = -1);
 
 private slots:
     void doneLoading(bool);
