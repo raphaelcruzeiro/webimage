@@ -61,7 +61,12 @@ void Snapshot::doneWaiting()
         statusCode != 303
        ) {
 
-        view->setMaximumHeight(page->mainFrame()->contentsSize().height());
+        if(size.width() < page->mainFrame()->contentsSize().width()) {
+            size.setWidth(page->mainFrame()->contentsSize().width());
+            view->setMinimumWidth(page->mainFrame()->contentsSize().width());
+        }
+
+        view->setMinimumHeight(page->mainFrame()->contentsSize().height());
         view->repaint();
         QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
         pix.save(*outputFilename, "JPEG", quality);
