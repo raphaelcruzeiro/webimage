@@ -22,22 +22,17 @@ Snapshot::Snapshot(QObject *parent) : QObject(parent), page(new CustomWebPage), 
 {
 }
 
-void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, QSize scaleTo, bool ignoreVerticalLimit, bool useSystemUI, int quality)
+void Snapshot::shot(QUrl url, QSize &size, QString *outputFilename, int quality)
 {
-    this->scaleTo = scaleTo;
-    this->ignoreVerticalLimit = ignoreVerticalLimit;
     this->size = size;
-    this->useSystemUI = useSystemUI;
     this->quality = quality;
 
-    if(useSystemUI) {
-        qDebug() << "Loading UI...";
-        view = new QWebView;
-        view->setPage(page);
-        QSize newSize = this->size;
-        newSize.setHeight(7000);
-        view->setMinimumSize(newSize);
-    }
+    qDebug() << "Loading fake UI...";
+    view = new QWebView;
+    view->setPage(page);
+    QSize newSize = this->size;
+    newSize.setHeight(7000);
+    view->setMinimumSize(newSize);
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), SLOT(doneWaiting()));
@@ -66,31 +61,16 @@ void Snapshot::doneWaiting()
         statusCode != 303
        ) {
 
-        if(!useSystemUI) {
-            QImage image(page->viewportSize(), QImage::Format_ARGB32);
-            QPainter painter(&image);
-
-            page->mainFrame()->render(&painter);
-            painter.end();
-
-            if(this->scaleTo != QSize(0, 0)) {
-                qDebug() << "Scaling to " << scaleTo.width() << "x" << scaleTo.height();
-                image = image.scaled(scaleTo);
-            }
-
-            image.save(*outputFilename, "JPEG");
-        } else {
-            view->setMaximumHeight(page->mainFrame()->contentsSize().height());
-            view->repaint();
-            QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
-            pix.save(*outputFilename, "JPEG", quality);
+        view->setMaximumHeight(page->mainFrame()->contentsSize().height());
+        view->repaint();
+        QPixmap pix = QPixmap::grabWidget(view, 0, 0, size.width(), page->mainFrame()->contentsSize().height());
+        pix.save(*outputFilename, "JPEG", quality);
 
 
-            QString thumbFilename = QString("%1_thumb.jpg").arg(outputFilename->split('.')[0]);
-            QSize thumbSize((size.width() / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
-            pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
-            pix.save(thumbFilename, "JPEG", quality);
-        }
+        QString thumbFilename = QString("%1_thumb.jpg").arg(outputFilename->split('.')[0]);
+        QSize thumbSize((size.width() / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
+        pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
+        pix.save(thumbFilename, "JPEG", quality);
 
         QApplication::quit();
     }

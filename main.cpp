@@ -27,19 +27,8 @@ int main(int argc, char *argv[])
         QUrl url;
         QString output;
         QSize size(1024, 768);
-        QSize scaleTo(0, 0);
-        bool ignoreVerticalLimit = false;
-        bool useSystemUI = false;
 
         for(int i = 0; i < argc; i++) {
-            if(strcmp(argv[i], "ignore-vertical-limit") == 0) {
-                ignoreVerticalLimit = true;
-                continue;
-            } else if (strcmp(argv[i], "use-system-ui") == 0) {
-                useSystemUI = true;
-                continue;
-            }
-
             switch (i) {
             case 1:
                 url = QUrl(QString(argv[1]));
@@ -55,18 +44,11 @@ int main(int argc, char *argv[])
                             QString(argv[3]).split(QChar('x'))[1].toInt()
                 );
                 break;
-
-            case 4:
-                scaleTo = QSize(
-                            QString(argv[4]).split(QChar('x'))[0].toInt(),
-                            QString(argv[4]).split(QChar('x'))[1].toInt()
-                );
-                break;
             }
         }
 
         Snapshot shot;
-        shot.shot(url, size, &output, scaleTo, ignoreVerticalLimit, useSystemUI);
+        shot.shot(url, size, &output);
 
         return a.exec();
     }

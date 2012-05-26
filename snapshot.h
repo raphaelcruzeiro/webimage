@@ -33,16 +33,14 @@ class Snapshot : QObject
     QTimer *timer;
     int statusCode;
     QUrl redirectUrl;
-    QSize scaleTo, size;
-    bool ignoreVerticalLimit, useSystemUI;
     QWebView *view;
+    QSize size;
 
     int tries, quality;
 
 public:
     Snapshot(QObject *parent = 0);
-    void shot(QUrl url, QSize &size, QString *outputFilename = new QString("output.png"),
-              QSize scaleTo = QSize(0, 0), bool ignoreVerticalLimit = false, bool useSystemUI = false, int quality = -1);
+    void shot(QUrl url, QSize &size, QString *outputFilename = new QString("output.png"), int quality = -1);
 
 private slots:
     void doneLoading(bool);
