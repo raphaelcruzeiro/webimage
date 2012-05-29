@@ -22,7 +22,8 @@
 
 int main(int argc, char *argv[])
 {
-    if(argc > 0) {
+    if(argc > 0)
+    {
         QApplication a(argc, argv);
 
         QUrl url;

@@ -68,13 +68,18 @@ void Snapshot::doneWaiting()
             view->setMinimumWidth(page->mainFrame()->contentsSize().width());
         }
 
+        if(!outputFilename->toLower().endsWith(".jpg")) {
+            outputFilename->append(".jpg");
+        }
+
         view->setMinimumHeight(page->mainFrame()->contentsSize().height());
         view->repaint();
         QPixmap pix = QPixmap::grabWidget(view, 0, 0, minWidth, page->mainFrame()->contentsSize().height());
         pix.save(*outputFilename, "JPEG", quality);
 
+        outputFilename->chop(4);
 
-        QString thumbFilename = QString("%1_thumb.jpg").arg(outputFilename->split('.')[0]);
+        QString thumbFilename = QString("%1_thumb.jpg").arg(*outputFilename);
         QSize thumbSize((minWidth / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
         pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
         pix.save(thumbFilename, "JPEG", quality);
