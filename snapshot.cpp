@@ -15,6 +15,7 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QApplication>
+#include <QPrinter>
 #include "snapshot.h"
 #include "customwebpage.h"
 
@@ -68,21 +69,39 @@ void Snapshot::doneWaiting()
             view->setMinimumWidth(page->mainFrame()->contentsSize().width());
         }
 
-        if(!outputFilename->toLower().endsWith(".jpg")) {
+        QString lOutputFilename = outputFilename->toLower();
+        bool generatePdf = false;
+
+        if(lOutputFilename.endsWith(".pdf")) {
+            generatePdf = true;
+        }
+        else if(!lOutputFilename.endsWith(".jpg")) {
             outputFilename->append(".jpg");
         }
 
         view->setMinimumHeight(page->mainFrame()->contentsSize().height());
         view->repaint();
         QPixmap pix = QPixmap::grabWidget(view, 0, 0, minWidth, page->mainFrame()->contentsSize().height());
-        pix.save(*outputFilename, "JPEG", quality);
 
-        outputFilename->chop(4);
+        if(generatePdf) {
+            QPrinter printer;
+            printer.setOutputFileName(*outputFilename);
+            printer.setOutputFormat(QPrinter::PdfFormat);
+            printer.setPaperSize(page->mainFrame()->contentsSize(), QPrinter::DevicePixel);
 
-        QString thumbFilename = QString("%1_thumb.jpg").arg(*outputFilename);
-        QSize thumbSize((minWidth / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
-        pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
-        pix.save(thumbFilename, "JPEG", quality);
+            QPainter painter(&printer);
+            painter.drawPixmap(0, 0, pix);
+            painter.end();
+        } else {
+            pix.save(*outputFilename, "JPEG", quality);
+
+            outputFilename->chop(4);
+
+            QString thumbFilename = QString("%1_thumb.jpg").arg(*outputFilename);
+            QSize thumbSize((minWidth / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
+            pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
+            pix.save(thumbFilename, "JPEG", quality);
+        }
 
         QApplication::quit();
     }
