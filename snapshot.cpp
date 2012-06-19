@@ -93,14 +93,19 @@ void Snapshot::doneWaiting()
             painter.drawPixmap(0, 0, pix);
             painter.end();
         } else {
-            pix.save(*outputFilename, "JPEG", quality);
+            if (pix.save(*outputFilename, "JPEG", quality)) {
+                qDebug() << "Saved image.";
+            }
 
             outputFilename->chop(4);
 
             QString thumbFilename = QString("%1_thumb.jpg").arg(*outputFilename);
             QSize thumbSize((minWidth / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
             pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
-            pix.save(thumbFilename, "JPEG", quality);
+
+            if (pix.save(thumbFilename, "JPEG", quality)) {
+                qDebug() << "Saved thumb.";
+            }
         }
 
         QApplication::quit();
