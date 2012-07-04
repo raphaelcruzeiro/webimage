@@ -64,6 +64,10 @@ void Snapshot::doneWaiting()
         statusCode != 303
        ) {
 
+        int height = page->mainFrame()->contentsSize().height();
+
+        height = height > 8000 ? 8000 : height;
+
         if(minWidth < page->mainFrame()->contentsSize().width()) {
             minWidth = page->mainFrame()->contentsSize().width();
             view->setMinimumWidth(page->mainFrame()->contentsSize().width());
@@ -79,9 +83,9 @@ void Snapshot::doneWaiting()
             outputFilename->append(".jpg");
         }
 
-        view->setMinimumHeight(page->mainFrame()->contentsSize().height());
+        view->setMinimumHeight(height);
         view->repaint();
-        QPixmap pix = QPixmap::grabWidget(view, 0, 0, minWidth, page->mainFrame()->contentsSize().height());
+        QPixmap pix = QPixmap::grabWidget(view, 0, 0, minWidth, height);
 
         if(generatePdf) {
             QPrinter printer;
@@ -100,7 +104,7 @@ void Snapshot::doneWaiting()
             outputFilename->chop(4);
 
             QString thumbFilename = QString("%1_thumb.jpg").arg(*outputFilename);
-            QSize thumbSize((minWidth / 100) * 50, (page->mainFrame()->contentsSize().height() / 100) * 50);
+            QSize thumbSize((minWidth / 100) * 50, (height / 100) * 50);
             pix =pix.scaled(thumbSize, Qt::KeepAspectRatio);
 
             if (pix.save(thumbFilename, "JPEG", quality)) {
